@@ -29,19 +29,14 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build .\src\androidTest\java\com\flexicharge\bolt\TestApi.kt
 
-      - name: Run Unit Tests
-        run: ./gradlew test
+      - name: Run Tests
+        run: ./gradlew test .\src\androidTest\java\com\flexicharge\bolt\TestApi.kt
 
       - name: Upload Test Results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v2 .\src\androidTest\java\com\flexicharge\bolt\TestApi.kt
         with:
           name: test-results
-          path: app/build/reports/tests
+          path: app/build/reports/tests .\src\androidTest\java\com\flexicharge\bolt\TestApi.kt
 
-      - name: Upload UI Test Results
-        uses: actions/upload-artifact@v2
-        with:
-          name: ui-test-results
-          path: app/build/outputs/androidTest-results/connected
