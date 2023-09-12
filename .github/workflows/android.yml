@@ -35,8 +35,8 @@ jobs:
         run: ./gradlew test .\src\androidTest\java\com\flexicharge\bolt\TestApi.kt
 
       - name: Upload Test Results
-        uses: actions/upload-artifact@v2 .\src\androidTest\java\com\flexicharge\bolt\TestApi.kt
+        uses: actions/upload-artifact@v2
         with:
           name: test-results
-          path: app/build/reports/tests .\src\androidTest\java\com\flexicharge\bolt\TestApi.kt
+          path: app/build/reports/tests
 
