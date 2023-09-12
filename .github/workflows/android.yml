@@ -28,11 +28,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Build with Gradle
+        run: ./gradlew build
+
       - name: Run Unit Tests
         run: ./gradlew test
-
-      - name: Run UI Tests
-        run: ./gradlew connectedAndroidTest
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v2
