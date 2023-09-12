@@ -30,7 +30,7 @@ jobs:
 
 
       - name: Run Specific Test
-        run: ./gradlew test --tests "com.flexicharge.bolt.TestApiKt"
+        run: ./gradlew test --tests "com.flexicharge.bolt.TestApi.kt"
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v2
