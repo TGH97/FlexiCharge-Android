@@ -30,7 +30,7 @@ jobs:
 
 
       - name: Build and Run Specific Test
-          run: |
+          run:
             ./gradlew clean
             ./gradlew app:connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.flexicharge.bolt.TestApi
 
