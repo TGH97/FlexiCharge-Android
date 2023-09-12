@@ -29,8 +29,8 @@ jobs:
             ${{ runner.os }}-gradle-
 
 
-      - name: Run Tests
-        run: ./gradlew test .\src\androidTest\java\com\flexicharge\bolt\TestApi.kt
+      - name: Run Specific Test
+        run: ./gradlew test --tests "com.flexicharge.bolt.TestApiKt"
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v2
