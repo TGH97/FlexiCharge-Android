@@ -28,8 +28,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Build with Gradle
-        run: ./gradlew build .\src\androidTest\java\com\flexicharge\bolt\TestApi.kt
 
       - name: Run Tests
         run: ./gradlew test .\src\androidTest\java\com\flexicharge\bolt\TestApi.kt
