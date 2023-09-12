@@ -12,6 +12,6 @@ import org.junit.Assert.*
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-        assertEquals(4, 1 + 3)
+        assertEquals(5, 1 + 3)
     }
 }
