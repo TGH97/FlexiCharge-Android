@@ -29,7 +29,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Run unit tests
-        run: ./gradlew Test
+        run: ./gradlew andriodTest
         continue-on-error: true # Allow the workflow to continue even if some tests fail
 
       - name: Upload Test Results
