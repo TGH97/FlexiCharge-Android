@@ -34,9 +34,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: "Run UI Tests"
+        uses: vgaidarji/android-github-actions-emulator@v1.0.1
+
+
       - name: Run unit tests
         run: ./gradlew Test
         continue-on-error: true # Allow the workflow to continue even if some tests fail
+
+      - name: Run unit tests
+          run: ./gradlew connectedAndroidTest
+          continue-on-error: true # Allow the workflow to continue even if some tests fail
+
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v1
