@@ -1,5 +1,7 @@
 package com.flexicharge.bolt
 
+import com.flexicharge.bolt.api.flexicharge.RetrofitInstance
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -13,6 +15,11 @@ class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
         assertEquals(5, 1 + 3)
+    }
+    @Test
+    fun testGetChargerListSuccessful() = runBlocking {
+        val response = RetrofitInstance.flexiChargeApi.getChargerList()
+        assert(response.isSuccessful)
     }
 
     @Test
