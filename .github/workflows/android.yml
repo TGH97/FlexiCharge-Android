@@ -20,6 +20,9 @@ jobs:
         with:
           java-version: '11'
 
+      - name: Set JAVA_HOME
+        run: echo "JAVA_HOME=$(echo $JAVA_HOME)" >> $GITHUB_ENV
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
