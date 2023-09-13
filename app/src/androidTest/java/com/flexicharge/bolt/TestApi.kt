@@ -24,6 +24,7 @@ class TestApi {
         assert(response.isSuccessful)
     }
 
+
     @Test
     fun testGetChargePointListSuccessful() = runBlocking {
         val response = RetrofitInstance.flexiChargeApi.getChargePointList()

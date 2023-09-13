@@ -47,3 +47,6 @@ jobs:
         with:
           name: test-results
           path: app/build/reports/tests
+
+      - name: List connected devices
+        run: adb devices
