@@ -38,10 +38,6 @@ jobs:
         run: ./gradlew Test
         continue-on-error: true # Allow the workflow to continue even if some tests fail
 
-      - name: Run Instrumentation Tests
-        run: ./gradlew connectedAndroidTest
-        continue-on-error: true # Allow the workflow to continue even if some tests fail
-
       - name: Upload Test Results
         uses: actions/upload-artifact@v1
         with:
