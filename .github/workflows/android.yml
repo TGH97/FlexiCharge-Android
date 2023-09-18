@@ -20,9 +20,10 @@ jobs:
         with:
           java-version: '11'
 
-      - name: Set JAVA_HOME
-        run: |
-          echo "JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-17.0.8.101-hotspot" >> $GITHUB_ENV
+      - name: Set up Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11'
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -43,9 +44,8 @@ jobs:
         run: ./gradlew Test
         continue-on-error: true # Allow the workflow to continue even if some tests fail
 
-
       - name: Upload Test Results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v1
         with:
           name: test-results
           path: app/build/reports/tests
