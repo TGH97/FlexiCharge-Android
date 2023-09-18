@@ -51,7 +51,7 @@ class ExampleUnitTest {
 
     @Test
     fun testGetChargePoint() = runBlocking {
-        val response = RetrofitInstance.flexiChargeApi.getChargePoint(24)
+        val response = RetrofitInstance.flexiChargeApi.getChargePoint(100029)
         assert(response.isSuccessful)
     }
 }
