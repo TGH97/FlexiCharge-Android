@@ -16,6 +16,7 @@ android {
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: 'true', testClass: 'com.flexicharge.bolt.TestApi'
     }
 
     buildTypes {
@@ -37,6 +38,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+    namespace 'com.flexicharge.bolt'
 }
 
 dependencies {
