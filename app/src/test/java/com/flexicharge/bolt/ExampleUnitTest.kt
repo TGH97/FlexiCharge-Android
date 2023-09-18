@@ -23,4 +23,35 @@ class ExampleUnitTest {
     fun addition_isCorrect1() {
         assertEquals(4, 1 + 3)
     }
+
+    @Test
+    fun testGetChargerSuccessful() = runBlocking {
+        val response = RetrofitInstance.flexiChargeApi.getCharger(100009)
+        assert(response.isSuccessful)
+    }
+
+    @Test
+    fun testGetChargerListSuccessful() = runBlocking {
+        val response = RetrofitInstance.flexiChargeApi.getChargerList()
+        assert(response.isSuccessful)
+    }
+
+
+    @Test
+    fun testGetChargePointListSuccessful() = runBlocking {
+        val response = RetrofitInstance.flexiChargeApi.getChargePointList()
+        assert(response.isSuccessful)
+    }
+
+    @Test
+    fun testGetTransactionSuccessful() = runBlocking {
+        val response = RetrofitInstance.flexiChargeApi.getTransaction(1)
+        assert(response.isSuccessful)
+    }
+
+    @Test
+    fun testGetChargePoint() = runBlocking {
+        val response = RetrofitInstance.flexiChargeApi.getChargePoint(24)
+        assert(response.isSuccessful)
+    }
 }
