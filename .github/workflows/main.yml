@@ -24,7 +24,6 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
-        continue-on-error: true # Allow the workflow to continue even if some tests fail
 
 
       - name: Set up Java
@@ -46,10 +45,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Start Android Emulator
+        run: |
+          echo "no" | avdmanager --verbose create avd --force --name test --package 'system-images;android-30;google_apis;x86_64' --abi 'google_apis/x86_64'
+          emulator -avd test -no-audio -no-window -gpu swiftshader_indirect &
+          android-wait-for-emulator
+          
+      - name: Run UI Tests
+        run: |
+          chmod +x ./gradlew
+          ./gradlew connectedCheck
 
       - name: Run unit tests
         run: ./gradlew Test
-        continue-on-error: true # Allow the workflow to continue even if some tests fail
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v1
