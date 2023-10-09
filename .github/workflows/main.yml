@@ -45,10 +45,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Start Android Emulator
+      - name: Start Emulator
         run: |
-          echo "no" | avdmanager --verbose create avd --force --name test --package 'system-images;android-30;google_apis;x86_64' --abi 'google_apis/x86_64'
-          emulator -avd test -no-audio -no-window -gpu swiftshader_indirect &
+          export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib
+          emulator -avd test -no-snapshot -no-audio -no-window -gpu swiftshader_indirect -no-boot-anim -camera-back none -camera-front none -qemu -m 2048 &
+
+      - name: Wait for Emulator
+        run: |
+          emulator "@test" -no-snapshot -no-audio -no-window -gpu swiftshader_indirect -no-boot-anim -camera-back none -camera-front none -qemu -m 2048 &
           android-wait-for-emulator
           
       - name: Run UI Tests
