@@ -50,10 +50,6 @@ jobs:
           export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib
           emulator -avd test -no-snapshot -no-audio -no-window -gpu swiftshader_indirect -no-boot-anim -camera-back none -camera-front none -qemu -m 2048 &
 
-      - name: Wait for Emulator
-        run: |
-          emulator "@test" -no-snapshot -no-audio -no-window -gpu swiftshader_indirect -no-boot-anim -camera-back none -camera-front none -qemu -m 2048 &
-          android-wait-for-emulator
           
       - name: Run UI Tests
         run: |
