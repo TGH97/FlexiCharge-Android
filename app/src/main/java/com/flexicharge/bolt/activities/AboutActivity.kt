@@ -1,12 +1,14 @@
 package com.flexicharge.bolt.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.flexicharge.bolt.R
+import androidx.appcompat.app.AppCompatActivity
+import com.flexicharge.bolt.databinding.ActivityAboutBinding
 
 class AboutActivity : AppCompatActivity() {
+    lateinit var binding: ActivityAboutBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_about)
+        binding = ActivityAboutBinding.inflate(layoutInflater)
+        setContentView(binding.root)
     }
 }

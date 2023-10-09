@@ -1,16 +1,15 @@
 package com.flexicharge.bolt.activities.businessLogic
 
-import com.flexicharge.bolt.helpers.StatusCode
 import com.flexicharge.bolt.api.flexicharge.Credentials
 import com.flexicharge.bolt.api.flexicharge.LoginResponseBody
 import com.flexicharge.bolt.api.flexicharge.ResetRequestBody
 import com.flexicharge.bolt.api.flexicharge.RetrofitInstance
-import retrofit2.Callback
-import retrofit2.HttpException
+import com.flexicharge.bolt.helpers.StatusCode
 import java.io.IOException
+import retrofit2.HttpException
 
 class EntryManager {
-    private val emptyResponseBody = LoginResponseBody("","","","")
+    private val emptyResponseBody = LoginResponseBody("", "", "", "")
 
     suspend fun singIn(
         username: String,
@@ -50,19 +49,18 @@ class EntryManager {
         }
     }
 
-
     suspend fun confirmResetPass(
         email: String,
         newPassword: String,
         confirmationCode: String,
         callback: (message: String, isOk: Boolean) -> Unit
-    ){
+    ) {
         try {
             val body = ResetRequestBody(email, newPassword, confirmationCode)
             val response = RetrofitInstance.flexiChargeApi.confReset(body)
-            if(response.code() == StatusCode.ok) {
+            if (response.code() == StatusCode.ok) {
                 callback.invoke("Successfully changed the password.", true)
-            } else if (response.code() == StatusCode.badRequest){
+            } else if (response.code() == StatusCode.badRequest) {
                 callback("Invalid confirmation code!", false)
             }
         } catch (e: HttpException) {

@@ -1,7 +1,4 @@
 package com.flexicharge.bolt.api.flexicharge
-import okhttp3.Credentials
-
-import android.telephony.TelephonyCallback
 
 class Chargers : ArrayList<Charger>()
 
@@ -11,7 +8,7 @@ data class Credentials(
 )
 data class LoginResponseBody(
     val accessToken: String,
-    val email : String,
+    val email: String,
     val username: String,
     val user_id: String
 )
@@ -22,6 +19,13 @@ data class Charger(
     val location: List<Double>,
     val serialNumber: String,
     val status: String
+)
+
+data class ReservatioDetails(
+    val chargerID: String,
+    val userID: String,
+    val start: Int,
+    val end: Int
 )
 
 class ChargePoints : ArrayList<ChargePoint>()
@@ -37,18 +41,19 @@ class TransactionList : ArrayList<Transaction>()
 
 data class Transaction(
     val chargerID: Int,
-    val client_token: String,
-    val currentChargePercentage: Int,
+    var klarna_consumer_token: String,
+    var currentChargePercentage: Int,
     val isKlarnaPayment: Boolean,
-    val kwhTransfered: Double,
+    var kwhTransfered: Double,
     val meterStart: Int,
     val paymentConfirmed: Boolean,
     val paymentID: String,
     val pricePerKwh: String,
     val session_id: String,
-    val timestamp: Int,
+    val timestamp: Long,
     val transactionID: Int,
-    val userID: String
+    val userID: String,
+    val startTimeStamp: Long ? = null
 )
 
 data class TransactionSession(
@@ -62,34 +67,40 @@ data class TransactionSessionResponse(
     val transactionID: Int
 )
 
-data class TransactionOrder(
-    val authorization_token: String
-)
 // Every user has his own email, password
 class UserDetails(
-    val username : String,
-    val password : String
+    val username: String,
+    val password: String
 )
 
 class UserFullDetails(
-    val firstName : String ?= null,
-    val lastName : String ?= null,
-    val phoneNumber : String ?= null,
-    val streetAddress : String ?= null,
-    val zipCode : String ?= null,
-    val city : String ?= null,
-    val country : String ?= null,
+    val firstName: String ? = null,
+    val lastName: String ? = null,
+    val phoneNumber: String ? = null,
+    val streetAddress: String ? = null,
+    val zipCode: String ? = null,
+    val city: String ? = null,
+    val country: String ? = null
 )
 
-class VerificationDetails (
-    val username : String,
-    val code : String
+class ChargingHistoryObject(
+    val location: String,
+    val totalSum: String,
+    val startTime: String,
+    val chargeTime: String,
+    val transferedKwh: String,
+    val priceKwh: String
+)
+
+class VerificationDetails(
+    val username: String,
+    val code: String
 )
 
 class UserDetailsGotten(
-    val message : String,
-    val code : String,
-    val statusCode : Int
+    val message: String,
+    val code: String,
+    val statusCode: Int
 )
 
 data class ResetResponseBody(val status: String)
@@ -100,3 +111,22 @@ data class ResetRequestBody(
     val confirmationCode: String
 )
 
+data class InitTransactionDetails(
+    val userID: String,
+    val chargerID: String
+)
+
+data class InitTransactionDetailsV2(
+    val userID: String,
+    val chargerID: Int,
+    val isKlarnaPayment: Boolean,
+    val pricePerKwh: Int
+)
+data class TransactionId(
+    val transactionID: Int
+)
+
+data class klarnaResponse(
+    val payment_method_type: String,
+    val status: String
+)

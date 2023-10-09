@@ -1,6 +1,7 @@
 package com.flexicharge.bolt.activities
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -9,25 +10,27 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.flexicharge.bolt.*
+import com.flexicharge.bolt.R
 import com.flexicharge.bolt.activities.businessLogic.RemoteTransaction
-import com.flexicharge.bolt.api.flexicharge.RetrofitInstance
-import com.flexicharge.bolt.api.flexicharge.Transaction
-import com.flexicharge.bolt.api.flexicharge.TransactionList
-import com.flexicharge.bolt.api.flexicharge.TransactionOrder
 import com.flexicharge.bolt.api.klarna.OrderClient
-import com.klarna.mobile.sdk.api.payments.*
+import com.flexicharge.bolt.foregroundServices.ChargingService
+import com.klarna.mobile.sdk.api.payments.KlarnaPaymentCategory
+import com.klarna.mobile.sdk.api.payments.KlarnaPaymentView
+import com.klarna.mobile.sdk.api.payments.KlarnaPaymentViewCallback
+import com.klarna.mobile.sdk.api.payments.KlarnaPaymentsSDKError
 import kotlinx.coroutines.*
-import retrofit2.HttpException
-import java.io.IOException
 
 class KlarnaActivity : AppCompatActivity(), KlarnaPaymentViewCallback {
-    private val klarnaPaymentView by lazy { findViewById<KlarnaPaymentView>(R.id.klarnaActivity_KlarnaPaymentVie) }
+    private val klarnaPaymentView by lazy {
+        findViewById<KlarnaPaymentView>(
+            R.id.klarnaActivity_KlarnaPaymentVie
+        )
+    }
     private val authorizeButton by lazy { findViewById<Button>(R.id.klarnaActivity_button_authorize) }
-    private var chargerId : Int = 0
-    private var clientToken : String = ""
-    private var transactionId : Int = 0
-    private var authTokenId : String = ""
+    private var chargerId: Int = 0
+    private var klarnaConsumerToken: String = ""
+    private var transactionId: Int = 0
+    private var authTokenId: String = ""
 
     private val paymentCategory = KlarnaPaymentCategory.PAY_NOW // please update this value if needed
 
@@ -36,10 +39,12 @@ class KlarnaActivity : AppCompatActivity(), KlarnaPaymentViewCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_klarna)
+
         chargerId = intent.getIntExtra("ChargerId", 0)
-        clientToken = intent.getStringExtra("ClientToken").toString()
+        klarnaConsumerToken = intent.getStringExtra("klarna_consumer_token").toString()
         transactionId = intent.getIntExtra("TransactionId", 0)
-        Log.d("CLIENTTOKEN", clientToken)
+        Log.d("CLIENT_TOKEN", klarnaConsumerToken)
+
         initialize()
 
         setupButtons()
@@ -48,18 +53,19 @@ class KlarnaActivity : AppCompatActivity(), KlarnaPaymentViewCallback {
 
     private fun initialize() {
         if (OrderClient.hasSetCredentials()) {
-            job = GlobalScope.launch {
-            try {
-                runOnUiThread {
-                    klarnaPaymentView.initialize(
-                        clientToken,
-                        "${getString(R.string.return_url_scheme)}://${getString(R.string.return_url_host)}"
-                    )
+            job = lifecycleScope.launch {
+                try {
+                    runOnUiThread {
+                        klarnaPaymentView.initialize(
+                            klarnaConsumerToken,
+                            "${getString(R.string.return_url_scheme)}://${getString(
+                                R.string.return_url_host
+                            )}"
+                        )
+                    }
+                } catch (exception: Exception) {
+                    showError(exception.message)
                 }
-            }
-            catch (exception: Exception) {
-                showError(exception.message)
-            }
             }
         } else {
             showError(getString(R.string.error_credentials))
@@ -84,19 +90,18 @@ class KlarnaActivity : AppCompatActivity(), KlarnaPaymentViewCallback {
     }
 
     private fun runOnUiThread(action: () -> Unit) {
-        GlobalScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch(Dispatchers.Main) {
             action.invoke()
         }
     }
 
     override fun onInitialized(view: KlarnaPaymentView) {
-
         // load the payment view after its been initialized
+
         view.load(null)
     }
 
     override fun onLoaded(view: KlarnaPaymentView) {
-
         // enable the authorization after the payment view is loaded
         authorizeButton.isEnabled = true
     }
@@ -111,26 +116,38 @@ class KlarnaActivity : AppCompatActivity(), KlarnaPaymentViewCallback {
     ) {
         if (authToken != null) {
             val remoteTransaction = RemoteTransaction(transactionId)
-            try{
+            try {
+                val startTime = System.currentTimeMillis()
                 val startTransactionJob = remoteTransaction.start(lifecycleScope)
                 val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
                 startTransactionJob.invokeOnCompletion {
-                    if(!startTransactionJob.isCancelled) {
-                        sharedPreferences.edit().apply { putInt("TransactionId", transactionId) }.apply()
-                    }
-                    else {
-                        sharedPreferences.edit().apply { putInt("TransactionId", -1) }.apply()
-                    }
+                    if (!startTransactionJob.isCancelled) {
+                        lifecycleScope.launch(Dispatchers.Main) {
+                            sharedPreferences.edit().apply { putInt("TransactionId", transactionId) }.apply()
 
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        finish()
+                            Intent(applicationContext, ChargingService::class.java).also {
+                                it.action = ChargingService.Actions.START.toString()
+                                it.putExtra("startTime", startTime)
+                                startService(it)
+                            }
+
+                            finish()
+                        }
+                    } else {
+                        sharedPreferences.edit().apply { putInt("TransactionId", -1) }.apply()
+
+                        lifecycleScope.launch(Dispatchers.Main) {
+                            finish()
+                        }
                     }
                 }
-
-            }
-            catch (e: CancellationException) {
+            } catch (e: CancellationException) {
                 lifecycleScope.launch(Dispatchers.Main) {
-                    Toast.makeText(applicationContext, "Transaction could not be started: " + e.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        applicationContext,
+                        "Transaction could not be started: " + e.message,
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
@@ -144,7 +161,7 @@ class KlarnaActivity : AppCompatActivity(), KlarnaPaymentViewCallback {
     override fun onErrorOccurred(view: KlarnaPaymentView, error: KlarnaPaymentsSDKError) {
         println("An error occurred: ${error.name} - ${error.message}")
         if (error.isFatal) {
-            klarnaPaymentView.visibility = View.INVISIBLE
+            klarnaPaymentView.visibility = View.VISIBLE
         }
     }
 
@@ -160,5 +177,4 @@ class KlarnaActivity : AppCompatActivity(), KlarnaPaymentViewCallback {
         klarnaPaymentView.unregisterPaymentViewCallback(this)
         job?.cancel()
     }
-
 }

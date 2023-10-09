@@ -2,9 +2,9 @@ package com.flexicharge.bolt.activities
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.flexicharge.bolt.R
 import com.flexicharge.bolt.activities.businessLogic.EntryManager
@@ -31,7 +31,6 @@ class LoginActivity : AppCompatActivity() {
 
         val emailEditText = binding.loginActivityEditTextEmail
         val passwordEditText = binding.loginActivityEditTextPassword
-        val error = binding.loginActivityErrorMessage
 
         validator.validateUserInput(emailEditText, TextInputType.isEmail)
         validator.validateUserInput(passwordEditText, TextInputType.isPassword)
@@ -43,10 +42,14 @@ class LoginActivity : AppCompatActivity() {
                 entryManager.singIn(username, password) { responseBody, message, isOK ->
                     if (isOK) {
                         LoginChecker.LOGGED_IN = true
-                        navigateToMain(responseBody.accessToken, responseBody.user_id, responseBody.username, responseBody.email)
-                    }
-                    else {
-                        lifecycleScope.launch (Dispatchers.Main) {
+                        navigateToMain(
+                            responseBody.accessToken,
+                            responseBody.user_id,
+                            responseBody.username,
+                            responseBody.email
+                        )
+                    } else {
+                        lifecycleScope.launch(Dispatchers.Main) {
                             buildAlertDialog(message)
                         }
                     }
@@ -64,10 +67,9 @@ class LoginActivity : AppCompatActivity() {
             .setTitle("Oops!")
             .setMessage(message)
             .setNegativeButton("Ok") { _, _ ->
-
             }.show()
     }
-    private fun navigateToMain(accessToken: String, userId: String, username: String, email:String) {
+    private fun navigateToMain(accessToken: String, userId: String, username: String, email: String) {
         val sharedPreferences = getSharedPreferences("loginPreference", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.apply {
@@ -81,5 +83,4 @@ class LoginActivity : AppCompatActivity() {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
-
 }
